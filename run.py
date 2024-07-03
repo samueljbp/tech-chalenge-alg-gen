@@ -8,14 +8,17 @@ from gen_alg import *
 from draw_methods import *
 import random
 
+COR_VERDE_ESCURO = (0, 100, 0)
+COR_VERMELHO_ESCURO = (139, 0, 0)
+
 # [peso,valor]
 # itens_disponiveis = [[4, 30], [8, 10], [8, 30], [25, 75],
 #                    [2, 10], [50, 100], [6, 300], [12, 50],
 #                    [100, 400], [8, 300]]
 # gera o conjunto de itens de forma aleatória. Gera 20 itens com peso entre 1 e 10 e valor entre 1 e 300
-itens_disponiveis = [(random.randint(1, 10), random.randint(1, 300)) for _ in range(20)]
+itens_disponiveis = [(random.randint(1, 10), random.randint(1, 300)) for _ in range(16)]
 
-peso_maximo = 100
+peso_maximo = 30
 tamanho_populacao = 150
 max_geracoes = 200
 qtd_itens_disponiveis = len(itens_disponiveis)
@@ -24,7 +27,9 @@ running = True
 cont_geracao = 0
 
 populacao = population(tamanho_populacao, qtd_itens_disponiveis)
-historico_de_fitness = [media_fitness(populacao, peso_maximo, itens_disponiveis)]
+melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
+historico_de_fitness = [melhor_sol[0]]
+historico_de_solucoes = [melhor_sol[1]]
 
 mutate = 0.05
 
@@ -50,9 +55,9 @@ while running:
         # REPRODUCAO
         filhos = []
         while len(filhos) < tamanho_populacao:
-            homem, mulher = selecao_roleta(pais)
-            meio = len(homem) // 2
-            filho = homem[:meio] + mulher[meio:]
+            pai1, pai2 = selecao_roleta(pais)
+            meio = len(pai1) // 2
+            filho = pai1[:meio] + pai2[meio:]
             filhos.append(filho)
 
         # MUTACAO
@@ -66,14 +71,32 @@ while running:
 
         populacao = filhos
 
-        historico_de_fitness.append(media_fitness(populacao, peso_maximo, itens_disponiveis))
+        # historico_de_fitness.append(media_fitness(populacao, peso_maximo, itens_disponiveis))
+        melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
+        print("Melhor fit", str(melhor_sol[0]))
+        print("Melhor sol", str(melhor_sol[1]))
+        # print("Historico", historico_de_fitness)
+        historico_de_fitness.append(melhor_sol[0])
+        historico_de_solucoes.append(melhor_sol[1])
         cont_geracao += 1
 
         historico_de_fitness_invertido = inverter_array(historico_de_fitness)
         draw_plot(list(range(len(historico_de_fitness))), historico_de_fitness)
 
+        draw_text(screen, "Melhor conjunto de itens",
+                  930, 20, (0, 0, 0), font_size=20, font='Arial')
+
+        y_item = 60
+        for indice, item in enumerate(itens_disponiveis):
+            cor = COR_VERMELHO_ESCURO
+            if melhor_sol[1][indice] == 1:
+                cor = COR_VERDE_ESCURO
+            draw_text(screen, "Item " + str(indice) + " - " + str(item[0]) + " g | R$ " + str(item[1]),
+                      930, y_item, cor, font_size=15, font='Arial')
+            y_item += 30
+
         draw_text(screen, f'Melhor resultado: {"{:.2f}".format(max(historico_de_fitness))}',
-                  930, window_size[1] - 100, font_size=25, font='Arial')
+                  930, window_size[1] - 50, font_size=25, font='Arial')
 
         tick_clock()
     else:

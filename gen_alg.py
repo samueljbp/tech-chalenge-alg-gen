@@ -31,6 +31,20 @@ def media_fitness(populacao, peso_maximo,
     return summed / (len(populacao) * 1.0)
 
 
+def melhor_solucao(populacao, peso_maximo,
+                   pesos_e_valores):  # só leva em consideracao os elementos que respeitem o peso maximo da mochila
+    """Encontra a avalicao media da populacao"""
+    melhor_fit = 0
+    melhor_sol = ()
+    for x in populacao:
+        fit = fitness(x, peso_maximo, pesos_e_valores)
+        if fit > melhor_fit:
+            melhor_fit = fit
+            melhor_sol = x
+
+    return melhor_fit, melhor_sol
+
+
 def selecao_roleta(pais):
     """Seleciona um pai e uma mae baseado nas regras da roleta"""
 
@@ -59,4 +73,3 @@ def selecao_roleta(pais):
     mae = valores[1][indice_mae]
 
     return pai, mae
-

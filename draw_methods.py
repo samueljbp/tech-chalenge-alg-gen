@@ -63,8 +63,7 @@ def draw_text(screen, text, x_position, y_position, color=(0, 0, 0), font_size=3
     # Initialize Pygame font
     pygame.font.init()
 
-    # limpa a tela para evitar sobreposição
-    screen.fill(COR_BRANCA, (LARGURA_TELA - 200, 0, 200, ALTURA_TELA))
+
 
     # Set the font and size
     font = pygame.font.SysFont(font, font_size)
@@ -77,6 +76,10 @@ def draw_text(screen, text, x_position, y_position, color=(0, 0, 0), font_size=3
 
     # Set the position of the text
     text_rect.topleft = (x_position, y_position)
+
+    # limpa a tela para evitar sobreposição
+    screen.fill(COR_BRANCA,
+                (text_rect.topleft[0], text_rect.topleft[1], text_rect.bottomright[0], text_rect.bottomright[1]))
 
     # Blit the text onto the screen
     screen.blit(text_surface, text_rect)
