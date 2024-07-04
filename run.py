@@ -10,28 +10,33 @@ import random
 
 COR_VERDE_ESCURO = (0, 100, 0)
 COR_VERMELHO_ESCURO = (139, 0, 0)
+COR_AZUL_ESCURO = (0, 0, 139)
 
 # [peso,valor]
 # itens_disponiveis = [[4, 30], [8, 10], [8, 30], [25, 75],
 #                    [2, 10], [50, 100], [6, 300], [12, 50],
 #                    [100, 400], [8, 300]]
 # gera o conjunto de itens de forma aleatória. Gera 20 itens com peso entre 1 e 10 e valor entre 1 e 300
-itens_disponiveis = [(random.randint(1, 10), random.randint(1, 300)) for _ in range(16)]
+itens_disponiveis = [(random.randint(5, 10), random.randint(1, 300)) for _ in range(16)]
 
-peso_maximo = 30
+peso_maximo = 40
 tamanho_populacao = 150
 max_geracoes = 200
 qtd_itens_disponiveis = len(itens_disponiveis)
+geracoes_estagnacao = 50
 
 running = True
 cont_geracao = 0
+cont_estagnacao = 0
 
 populacao = population(tamanho_populacao, qtd_itens_disponiveis)
 melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
 historico_de_fitness = [melhor_sol[0]]
 historico_de_solucoes = [melhor_sol[1]]
 
-mutate = 0.05
+melhor_fitness_anterior = 0
+
+mutation_probability = 0.05
 
 
 def inverter_array(array):
@@ -46,28 +51,18 @@ while running:
             if event.key == pygame.K_q:
                 running = False  # Quit the game when the 'q' key is pressed
 
-    if cont_geracao < max_geracoes:
+    if cont_geracao < max_geracoes and cont_estagnacao < geracoes_estagnacao:
 
         pais = [[fitness(x, peso_maximo, itens_disponiveis), x] for x in populacao if
                 fitness(x, peso_maximo, itens_disponiveis) >= 0]
         pais.sort(reverse=True)
 
         # REPRODUCAO
-        filhos = []
-        while len(filhos) < tamanho_populacao:
-            pai1, pai2 = selecao_roleta(pais)
-            meio = len(pai1) // 2
-            filho = pai1[:meio] + pai2[meio:]
-            filhos.append(filho)
+        filhos = reproduce(pais, tamanho_populacao)
 
         # MUTACAO
         for individuo in filhos:
-            if mutate > random.random():
-                pos_to_mutate = randint(0, len(individuo) - 1)
-                if individuo[pos_to_mutate] == 1:
-                    individuo[pos_to_mutate] = 0
-                else:
-                    individuo[pos_to_mutate] = 1
+            individuo = mutate(mutation_probability, individuo)
 
         populacao = filhos
 
@@ -75,7 +70,13 @@ while running:
         melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
         print("Melhor fit", str(melhor_sol[0]))
         print("Melhor sol", str(melhor_sol[1]))
-        # print("Historico", historico_de_fitness)
+
+        if melhor_sol[0] > melhor_fitness_anterior:
+            melhor_fitness_anterior = melhor_sol[0]
+            cont_estagnacao = 0
+        else:
+            cont_estagnacao += 1
+
         historico_de_fitness.append(melhor_sol[0])
         historico_de_solucoes.append(melhor_sol[1])
         cont_geracao += 1
@@ -101,18 +102,22 @@ while running:
         tick_clock()
     else:
         running = False
+
+        if cont_estagnacao >= geracoes_estagnacao:
+            # estagnou
+            draw_text(screen, "Estagnou!",
+                      1080, 60, COR_AZUL_ESCURO, font_size=20, font='Arial')
+
+            tick_clock()
+
         #quit_pygame()
 
 # PRINTS DO TERMINAL
 for indice, dados in enumerate(historico_de_fitness):
-    print("Geracao: ", indice, " | Media de valor na mochila: ", dados)
+    print("Geracao: ", indice, " | Maior valor na mochila: ", dados)
 
 print("\nPeso máximo:", peso_maximo, "g\n\nItens disponíveis:")
 for indice, i in enumerate(itens_disponiveis):
     print("Item ", indice + 1, ": ", i[0], "g | R$", i[1])
-
-print("\nExemplos de boas solucoes: ")
-for i in range(5):
-    print(populacao[i])
 
 k = input("press close to exit")

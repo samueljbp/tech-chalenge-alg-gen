@@ -10,6 +10,25 @@ def population(n_de_individuos, n_de_itens):
     """"Cria a populacao"""
     return [individual(n_de_itens) for x in range(n_de_individuos)]
 
+def reproduce(pais, tamanho_populacao):
+    filhos = []
+    while len(filhos) < tamanho_populacao:
+        pai1, pai2 = selecao_roleta(pais)
+        meio = len(pai1) // 2
+        filho = pai1[:meio] + pai2[meio:]
+        filhos.append(filho)
+
+    return filhos
+
+def mutate(mutation_probability, individuo):
+    if mutation_probability > random():
+        pos_to_mutate = randint(0, len(individuo) - 1)
+        if individuo[pos_to_mutate] == 1:
+            individuo[pos_to_mutate] = 0
+        else:
+            individuo[pos_to_mutate] = 1
+
+    return individuo
 
 def fitness(individuo, peso_maximo, pesos_e_valores):
     """Faz avaliacao do individuo"""
