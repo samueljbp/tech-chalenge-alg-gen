@@ -62,7 +62,7 @@ while running:
 
         # MUTACAO
         for individuo in filhos:
-            individuo = mutate(mutation_probability, individuo)
+            mutate(mutation_probability, individuo)
 
         populacao = filhos
 
@@ -96,8 +96,8 @@ while running:
                       930, y_item, cor, font_size=15, font='Arial')
             y_item += 30
 
-        draw_text(screen, f'Melhor resultado: {"{:.2f}".format(max(historico_de_fitness))}',
-                  930, window_size[1] - 50, font_size=25, font='Arial')
+        draw_text(screen, f'Melhor resultado: R$ {"{:.2f}".format(max(historico_de_fitness))}',
+                  930, window_size[1] - 50, font_size=22, font='Arial')
 
         tick_clock()
     else:

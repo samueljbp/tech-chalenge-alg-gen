@@ -10,6 +10,7 @@ def population(n_de_individuos, n_de_itens):
     """"Cria a populacao"""
     return [individual(n_de_itens) for x in range(n_de_individuos)]
 
+
 def reproduce(pais, tamanho_populacao):
     filhos = []
     while len(filhos) < tamanho_populacao:
@@ -20,6 +21,7 @@ def reproduce(pais, tamanho_populacao):
 
     return filhos
 
+
 def mutate(mutation_probability, individuo):
     if mutation_probability > random():
         pos_to_mutate = randint(0, len(individuo) - 1)
@@ -29,6 +31,7 @@ def mutate(mutation_probability, individuo):
             individuo[pos_to_mutate] = 1
 
     return individuo
+
 
 def fitness(individuo, peso_maximo, pesos_e_valores):
     """Faz avaliacao do individuo"""
