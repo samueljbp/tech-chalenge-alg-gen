@@ -14,7 +14,10 @@ def population(n_de_individuos, n_de_itens):
 def reproduce(pais, tamanho_populacao):
     filhos = []
     while len(filhos) < tamanho_populacao:
+        # seleciona os pais por roleta
         pai1, pai2 = selecao_roleta(pais)
+
+        # Cruzamento de Um Ponto
         meio = len(pai1) // 2
         filho = pai1[:meio] + pai2[meio:]
         filhos.append(filho)
@@ -23,6 +26,7 @@ def reproduce(pais, tamanho_populacao):
 
 
 def mutate(mutation_probability, individuo):
+    # técnica Mutação de Bit
     if mutation_probability > random():
         pos_to_mutate = randint(0, len(individuo) - 1)
         if individuo[pos_to_mutate] == 1:
@@ -70,7 +74,8 @@ def melhor_solucao(populacao, peso_maximo,
 def selecao_roleta(pais):
     """Seleciona um pai e uma mae baseado nas regras da roleta"""
 
-    def sortear(fitness_total, indice_a_ignorar=-1):  # 2 parametro garante que não vai selecionar o mesmo elemento
+    def sortear(fitness_total, indice_a_ignorar=-1):  # 2 parametro garante que não vai selecionar o mesmo elemento (
+        # elitismo)
         """Monta roleta para realizar o sorteio"""
         roleta, acumulado, valor_sorteado = [], 0, random()
 

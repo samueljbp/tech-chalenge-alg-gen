@@ -68,8 +68,6 @@ while running:
 
         # historico_de_fitness.append(media_fitness(populacao, peso_maximo, itens_disponiveis))
         melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
-        print("Melhor fit", str(melhor_sol[0]))
-        print("Melhor sol", str(melhor_sol[1]))
 
         if melhor_sol[0] > melhor_fitness_anterior:
             melhor_fitness_anterior = melhor_sol[0]
@@ -84,7 +82,7 @@ while running:
         historico_de_fitness_invertido = inverter_array(historico_de_fitness)
         draw_plot(list(range(len(historico_de_fitness))), historico_de_fitness)
 
-        draw_text(screen, "Melhor conjunto de itens",
+        draw_text(screen, "Exemplo de solução",
                   930, 20, (0, 0, 0), font_size=20, font='Arial')
 
         y_item = 60
