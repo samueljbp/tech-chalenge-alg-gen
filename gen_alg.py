@@ -11,11 +11,10 @@ def population(n_de_individuos, n_de_itens):
     return [individual(n_de_itens) for x in range(n_de_individuos)]
 
 
-def reproduce(pais, tamanho_populacao, tecnica_selecao = "T", elitismo=True, melhor_individuo=[]):
+def reproduce(pais, tamanho_populacao, tecnica_selecao = "T", elitismo=True, melhor_individuo=None):
     filhos = []
 
-    if elitismo and melhor_individuo != []:
-        print("Melhor ind", melhor_individuo)
+    if elitismo and melhor_individuo is not None:
         # Mantém o melhor indivíduo
         filhos.append(melhor_individuo)
 
@@ -61,15 +60,18 @@ def mutate(mutation_probability, individuo):
     return individuo
 
 
-def fitness(individuo, peso_maximo, pesos_e_valores):
+def fitness(individuo, peso_maximo, itens_disponiveis):
     """Faz avaliacao do individuo"""
     peso_total, valor_total = 0, 0
     for indice, valor in enumerate(individuo):
-        peso_total += (individuo[indice] * pesos_e_valores[indice][0])
-        valor_total += (individuo[indice] * pesos_e_valores[indice][1])
+        peso_total += (individuo[indice] * itens_disponiveis[indice][0])
+        valor_total += (individuo[indice] * itens_disponiveis[indice][1])
 
     if (peso_maximo - peso_total) < 0:
         return -1  # retorna -1 no caso de peso excedido
+
+    print("Calculo de fitness", individuo, valor_total)
+
     return valor_total  # se for um individuo valido retorna seu valor, sendo maior melhor
 
 
@@ -82,12 +84,12 @@ def media_fitness(populacao, peso_maximo,
 
 
 def melhor_solucao(populacao, peso_maximo,
-                   pesos_e_valores):  # só leva em consideracao os elementos que respeitem o peso maximo da mochila
+                   itens_disponiveis):  # só leva em consideracao os elementos que respeitem o peso maximo da mochila
     """Encontra a avalicao media da populacao"""
     melhor_fit = 0
     melhor_sol = ()
     for x in populacao:
-        fit = fitness(x, peso_maximo, pesos_e_valores)
+        fit = fitness(x, peso_maximo, itens_disponiveis)
         if fit > melhor_fit:
             melhor_fit = fit
             melhor_sol = x

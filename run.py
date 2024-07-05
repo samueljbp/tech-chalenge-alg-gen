@@ -20,20 +20,15 @@ cont_geracao = 0
 cont_estagnacao = 0
 
 populacao = population(tamanho_populacao, qtd_itens_disponiveis)
-melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
-historico_de_fitness = [melhor_sol[0]]
-historico_de_solucoes = [melhor_sol[1]]
+melhor_sol_geracao = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
+historico_de_solucoes = [(0, [])]
 melhor_sol_historica = []
 
 melhor_fitness_anterior = 0
 
 mutation_probability = 0.05
 
-elitismo = True
-
-
-def inverter_array(array):
-    return array[::-1]
+elitismo = False
 
 
 while running:
@@ -48,7 +43,7 @@ while running:
 
         pais = [[fitness(x, peso_maximo, itens_disponiveis), x] for x in populacao if
                 fitness(x, peso_maximo, itens_disponiveis) >= 0]
-        pais.sort(reverse=True)        
+        pais.sort(reverse=True)
 
         # REPRODUCAO
         filhos = reproduce(pais, tamanho_populacao, "R", elitismo, melhor_sol_historica)
@@ -60,41 +55,41 @@ while running:
         populacao = filhos
 
         # Identifica melhor solução da geração
-        melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
+        melhor_sol_geracao = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
+        print("Melhor sol", melhor_sol_geracao)
 
-        if melhor_sol[0] > melhor_fitness_anterior:
-            melhor_fitness_anterior = melhor_sol[0]
+        fit_melhor_sol_hist = fitness(melhor_sol_historica, peso_maximo, itens_disponiveis)
+        if melhor_sol_geracao[0] > fit_melhor_sol_hist:
+            melhor_sol_historica = melhor_sol_geracao[1]
+
+        if melhor_sol_geracao[0] > melhor_fitness_anterior:
+            melhor_fitness_anterior = melhor_sol_geracao[0]
             cont_estagnacao = 0
         else:
             cont_estagnacao += 1
 
-        historico_de_fitness.append(melhor_sol[0])
-        historico_de_solucoes.append(melhor_sol[1])
+        historico_de_solucoes.append(melhor_sol_geracao)
         cont_geracao += 1
 
-        historico_de_fitness_invertido = inverter_array(historico_de_fitness)
-        draw_plot(list(range(len(historico_de_fitness))), historico_de_fitness)
+        hist_fit = []
+        for item in historico_de_solucoes:
+            hist_fit.append(item[0])
+        draw_plot(list(range(len(hist_fit))), hist_fit)
 
         draw_text(screen, "Exemplo de solução",
-                  930, 20, (0, 0, 0), font_size=20, font='Arial')  
-
-        # Identificar melhor solução entre todas as gerações para exibir
-        indice_melhor_sol_historica = historico_de_fitness.index(max(historico_de_fitness))
-        melhor_sol_historica = historico_de_solucoes[indice_melhor_sol_historica]
-        print ("melhor_sol_historica", melhor_sol_historica)
-        print ("maior fitness", max(historico_de_fitness), indice_melhor_sol_historica, historico_de_fitness[indice_melhor_sol_historica])
-        print ("kkkkkkk", historico_de_solucoes[indice_melhor_sol_historica])
+                  930, 20, (0, 0, 0), font_size=20, font='Arial')
 
         y_item = 60
-        for indice, item in enumerate(itens_disponiveis):
+        for i, item in enumerate(itens_disponiveis):
             cor = COR_VERMELHO_ESCURO
-            if melhor_sol_historica[indice] == 1:
+            if melhor_sol_historica[i] == 1:
                 cor = COR_VERDE_ESCURO
-            draw_text(screen, "Item " + str(indice) + " - " + str(item[0]) + " g | R$ " + str(item[1]),
+            print ("item", i, item, melhor_sol_historica[i])
+            draw_text(screen, "Item " + str(i + 1) + " - " + str(item[0]) + " g | R$ " + str(item[1]),
                       930, y_item, cor, font_size=15, font='Arial')
             y_item += 30
 
-        draw_text(screen, f'Melhor resultado: R$ {"{:.2f}".format(max(historico_de_fitness))}',
+        draw_text(screen, f'Melhor resultado: R$ {"{:.2f}".format(fitness(melhor_sol_historica,peso_maximo, itens_disponiveis))}',
                   930, window_size[1] - 50, font_size=22, font='Arial')
 
         tick_clock()
@@ -109,5 +104,7 @@ while running:
             tick_clock()
 
         #quit_pygame()
+
+print("Melhor solucao historica", melhor_sol_historica, fitness(melhor_sol_historica, peso_maximo, itens_disponiveis))
 
 k = input("press close to exit")
