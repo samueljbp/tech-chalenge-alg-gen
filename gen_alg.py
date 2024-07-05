@@ -1,9 +1,9 @@
-from random import getrandbits, randint, random, choice
+import random
 
 
 def individual(n_de_itens):
     """Cria um membro da populacao"""
-    return [getrandbits(1) for x in range(n_de_itens)]
+    return [random.getrandbits(1) for x in range(n_de_itens)]
 
 
 def population(n_de_individuos, n_de_itens):
@@ -11,24 +11,47 @@ def population(n_de_individuos, n_de_itens):
     return [individual(n_de_itens) for x in range(n_de_individuos)]
 
 
-def reproduce(pais, tamanho_populacao):
+def reproduce(pais, tamanho_populacao, tecnica_selecao = "T", elitismo=True, melhor_individuo=[]):
     filhos = []
-    while len(filhos) < tamanho_populacao:
-        # seleciona os pais por roleta
-        pai1, pai2 = selecao_roleta(pais)
 
-        # Cruzamento de Um Ponto
-        meio = len(pai1) // 2
-        filho = pai1[:meio] + pai2[meio:]
-        filhos.append(filho)
+    if elitismo:
+        # Mantém o melhor indivíduo
+        filhos.append(melhor_individuo)
+
+    # torneio
+    if tecnica_selecao == "T":
+        tamanho_torneio = 10
+        while len(filhos) < tamanho_populacao:
+            pai1_genes = selecao_torneio(pais, tamanho_torneio)
+            pai2_genes = selecao_torneio(pais, tamanho_torneio)
+            meio = len(pai1_genes) // 2
+            filho_genes = pai1_genes[:meio] + pai2_genes[meio:]
+            filhos.append(filho_genes)
+    
+    # roleta
+    if tecnica_selecao == "R":
+        while len(filhos) < tamanho_populacao:
+            # seleciona os pais por roleta
+            pai1, pai2 = selecao_roleta(pais)
+
+            # Cruzamento de Um Ponto
+            meio = len(pai1) // 2
+            filho = pai1[:meio] + pai2[meio:]
+            filhos.append(filho)
 
     return filhos
+
+def selecao_torneio(pais, tamanho_torneio=3):
+    torneio = random.sample(pais, tamanho_torneio)
+    print ("pais", pais)
+    pai = max(torneio, key=lambda ind: ind[0])  # Seleciona o indivíduo com maior aptidão
+    return pai[1]  # Retorna apenas os genes do pai selecionado
 
 
 def mutate(mutation_probability, individuo):
     # técnica Mutação de Bit
-    if mutation_probability > random():
-        pos_to_mutate = randint(0, len(individuo) - 1)
+    if mutation_probability > random.random():
+        pos_to_mutate = random.randint(0, len(individuo) - 1)
         if individuo[pos_to_mutate] == 1:
             individuo[pos_to_mutate] = 0
         else:
@@ -70,14 +93,13 @@ def melhor_solucao(populacao, peso_maximo,
 
     return melhor_fit, melhor_sol
 
-
 def selecao_roleta(pais):
     """Seleciona um pai e uma mae baseado nas regras da roleta"""
 
     def sortear(fitness_total, indice_a_ignorar=-1):  # 2 parametro garante que não vai selecionar o mesmo elemento (
         # elitismo)
         """Monta roleta para realizar o sorteio"""
-        roleta, acumulado, valor_sorteado = [], 0, random()
+        roleta, acumulado, valor_sorteado = [], 0, random.random()
 
         if indice_a_ignorar != -1:  # Desconta do total, o valor que sera retirado da roleta
             fitness_total -= valores[0][indice_a_ignorar]

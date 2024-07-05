@@ -28,6 +28,8 @@ melhor_fitness_anterior = 0
 
 mutation_probability = 0.05
 
+elitismo = True
+
 
 def inverter_array(array):
     return array[::-1]
@@ -47,8 +49,12 @@ while running:
                 fitness(x, peso_maximo, itens_disponiveis) >= 0]
         pais.sort(reverse=True)
 
+        # Identificar melhor solução entre todas as gerações para exibir
+        indice_melhor_sol_historica = historico_de_fitness.index(max(historico_de_fitness))
+        melhor_sol_historica = historico_de_solucoes[indice_melhor_sol_historica]
+
         # REPRODUCAO
-        filhos = reproduce(pais, tamanho_populacao)
+        filhos = reproduce(pais, tamanho_populacao, "R", elitismo, melhor_sol_historica)
 
         # MUTACAO
         for individuo in filhos:
@@ -73,11 +79,7 @@ while running:
         draw_plot(list(range(len(historico_de_fitness))), historico_de_fitness)
 
         draw_text(screen, "Exemplo de solução",
-                  930, 20, (0, 0, 0), font_size=20, font='Arial')
-        
-        # Identificar melhor solução entre todas as gerações para exibir
-        indice_melhor_fitness = historico_de_fitness.index(max(historico_de_fitness))
-        melhor_sol_historica = historico_de_solucoes[indice_melhor_fitness]
+                  930, 20, (0, 0, 0), font_size=20, font='Arial')        
 
         y_item = 60
         for indice, item in enumerate(itens_disponiveis):
