@@ -1,9 +1,3 @@
-"""O problema da mochila: um problema de otimização combinatória.
-O nome dá-se devido ao modelo de uma situação em que é necessário
-preencher uma mochila com objetos de diferentes pesos e valores.
-O objetivo é que se preencha a mochila com o maior valor possível,
-não ultrapassando o peso máximo."""
-
 from gen_alg import *
 from draw_methods import *
 import random
@@ -84,11 +78,14 @@ while running:
 
         draw_text(screen, "Exemplo de solução",
                   930, 20, (0, 0, 0), font_size=20, font='Arial')
+        
+        indice_melhor_fitness = historico_de_fitness.index(max(historico_de_fitness))
+        melhor_sol_historica = historico_de_solucoes[indice_melhor_fitness]
 
         y_item = 60
         for indice, item in enumerate(itens_disponiveis):
             cor = COR_VERMELHO_ESCURO
-            if melhor_sol[1][indice] == 1:
+            if melhor_sol_historica[indice] == 1:
                 cor = COR_VERDE_ESCURO
             draw_text(screen, "Item " + str(indice) + " - " + str(item[0]) + " g | R$ " + str(item[1]),
                       930, y_item, cor, font_size=15, font='Arial')
@@ -109,13 +106,5 @@ while running:
             tick_clock()
 
         #quit_pygame()
-
-# PRINTS DO TERMINAL
-for indice, dados in enumerate(historico_de_fitness):
-    print("Geracao: ", indice, " | Maior valor na mochila: ", dados)
-
-print("\nPeso máximo:", peso_maximo, "g\n\nItens disponíveis:")
-for indice, i in enumerate(itens_disponiveis):
-    print("Item ", indice + 1, ": ", i[0], "g | R$", i[1])
 
 k = input("press close to exit")
