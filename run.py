@@ -6,10 +6,6 @@ COR_VERDE_ESCURO = (0, 100, 0)
 COR_VERMELHO_ESCURO = (139, 0, 0)
 COR_AZUL_ESCURO = (0, 0, 139)
 
-# [peso,valor]
-# itens_disponiveis = [[4, 30], [8, 10], [8, 30], [25, 75],
-#                    [2, 10], [50, 100], [6, 300], [12, 50],
-#                    [100, 400], [8, 300]]
 # gera o conjunto de itens de forma aleatória. Gera 20 itens com peso entre 1 e 10 e valor entre 1 e 300
 itens_disponiveis = [(random.randint(5, 10), random.randint(1, 300)) for _ in range(16)]
 
