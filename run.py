@@ -60,7 +60,7 @@ while running:
 
         populacao = filhos
 
-        # historico_de_fitness.append(media_fitness(populacao, peso_maximo, itens_disponiveis))
+        # Identifica melhor solução da geração
         melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
 
         if melhor_sol[0] > melhor_fitness_anterior:
@@ -79,6 +79,7 @@ while running:
         draw_text(screen, "Exemplo de solução",
                   930, 20, (0, 0, 0), font_size=20, font='Arial')
         
+        # Identificar melhor solução entre todas as gerações para exibir
         indice_melhor_fitness = historico_de_fitness.index(max(historico_de_fitness))
         melhor_sol_historica = historico_de_solucoes[indice_melhor_fitness]
 
