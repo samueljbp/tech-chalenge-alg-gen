@@ -23,6 +23,7 @@ populacao = population(tamanho_populacao, qtd_itens_disponiveis)
 melhor_sol = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
 historico_de_fitness = [melhor_sol[0]]
 historico_de_solucoes = [melhor_sol[1]]
+melhor_sol_historica = []
 
 melhor_fitness_anterior = 0
 
@@ -47,11 +48,7 @@ while running:
 
         pais = [[fitness(x, peso_maximo, itens_disponiveis), x] for x in populacao if
                 fitness(x, peso_maximo, itens_disponiveis) >= 0]
-        pais.sort(reverse=True)
-
-        # Identificar melhor solução entre todas as gerações para exibir
-        indice_melhor_sol_historica = historico_de_fitness.index(max(historico_de_fitness))
-        melhor_sol_historica = historico_de_solucoes[indice_melhor_sol_historica]
+        pais.sort(reverse=True)        
 
         # REPRODUCAO
         filhos = reproduce(pais, tamanho_populacao, "R", elitismo, melhor_sol_historica)
@@ -79,7 +76,14 @@ while running:
         draw_plot(list(range(len(historico_de_fitness))), historico_de_fitness)
 
         draw_text(screen, "Exemplo de solução",
-                  930, 20, (0, 0, 0), font_size=20, font='Arial')        
+                  930, 20, (0, 0, 0), font_size=20, font='Arial')  
+
+        # Identificar melhor solução entre todas as gerações para exibir
+        indice_melhor_sol_historica = historico_de_fitness.index(max(historico_de_fitness))
+        melhor_sol_historica = historico_de_solucoes[indice_melhor_sol_historica]
+        print ("melhor_sol_historica", melhor_sol_historica)
+        print ("maior fitness", max(historico_de_fitness), indice_melhor_sol_historica, historico_de_fitness[indice_melhor_sol_historica])
+        print ("kkkkkkk", historico_de_solucoes[indice_melhor_sol_historica])
 
         y_item = 60
         for indice, item in enumerate(itens_disponiveis):

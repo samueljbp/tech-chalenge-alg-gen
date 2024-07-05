@@ -14,7 +14,8 @@ def population(n_de_individuos, n_de_itens):
 def reproduce(pais, tamanho_populacao, tecnica_selecao = "T", elitismo=True, melhor_individuo=[]):
     filhos = []
 
-    if elitismo:
+    if elitismo and melhor_individuo != []:
+        print("Melhor ind", melhor_individuo)
         # Mantém o melhor indivíduo
         filhos.append(melhor_individuo)
 
