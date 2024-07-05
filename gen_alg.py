@@ -95,11 +95,10 @@ def melhor_solucao(populacao, peso_maximo,
     return melhor_fit, melhor_sol
 
 def selecao_roleta(pais):
-    """Seleciona um pai e uma mae baseado nas regras da roleta"""
+    # Seleciona 2 pais baseado nas regras da roleta
 
-    def sortear(fitness_total, indice_a_ignorar=-1):  # 2 parametro garante que não vai selecionar o mesmo elemento (
-        # elitismo)
-        """Monta roleta para realizar o sorteio"""
+    def sortear(fitness_total, indice_a_ignorar=-1):  # 2 parametro garante que não vai selecionar o mesmo elemento
+        # Monta roleta para realizar o sorteio
         roleta, acumulado, valor_sorteado = [], 0, random.random()
 
         if indice_a_ignorar != -1:  # Desconta do total, o valor que sera retirado da roleta
@@ -116,10 +115,10 @@ def selecao_roleta(pais):
     valores = list(zip(*pais))  # cria 2 listas com os valores fitness e os cromossomos
     fitness_total = sum(valores[0])
 
-    indice_pai = sortear(fitness_total)
-    indice_mae = sortear(fitness_total, indice_pai)
+    indice_pai1 = sortear(fitness_total)
+    indice_pai2 = sortear(fitness_total, indice_pai1)
 
-    pai = valores[1][indice_pai]
-    mae = valores[1][indice_mae]
+    pai = valores[1][indice_pai1]
+    mae = valores[1][indice_pai2]
 
     return pai, mae
