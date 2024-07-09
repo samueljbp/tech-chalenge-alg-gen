@@ -1,34 +1,36 @@
 import random
 
 
-def individual(n_de_itens):
-    """Cria um membro da populacao"""
+def create_individual(n_de_itens):
+    # cria um indivíduo aleatoriamente com um bit 1/0 para cada posição com o tamanho da lista de itens
     return [random.getrandbits(1) for x in range(n_de_itens)]
 
 
 def population(n_de_individuos, n_de_itens):
-    """"Cria a populacao"""
-    return [individual(n_de_itens) for x in range(n_de_individuos)]
+    # cria a popupalação, respeitando a variável que define o tamanho da mesma
+    return [create_individual(n_de_itens) for x in range(n_de_individuos)]
 
 
 def reproduce(pais, tamanho_populacao, tecnica_selecao = "T", elitismo=True, melhor_individuo=None):
     filhos = []
 
     if elitismo and melhor_individuo is not None:
-        # Mantém o melhor indivíduo
+        # Mantém o melhor indivíduo se estiver configurado para tal
         filhos.append(melhor_individuo)
 
-    # torneio
+    # se estiver parametrizado para fazer seleção por torneio
     if tecnica_selecao == "T":
         tamanho_torneio = 10
         while len(filhos) < tamanho_populacao:
             pai1_genes = selecao_torneio(pais, tamanho_torneio)
             pai2_genes = selecao_torneio(pais, tamanho_torneio)
+
+            # Cruzamento de Um Ponto
             meio = len(pai1_genes) // 2
             filho_genes = pai1_genes[:meio] + pai2_genes[meio:]
             filhos.append(filho_genes)
     
-    # roleta
+    # se estiver parametrizado para fazer seleção por roleta
     if tecnica_selecao == "R":
         while len(filhos) < tamanho_populacao:
             # seleciona os pais por roleta
@@ -41,16 +43,11 @@ def reproduce(pais, tamanho_populacao, tecnica_selecao = "T", elitismo=True, mel
 
     return filhos
 
-def selecao_torneio(pais, tamanho_torneio=3):
-    torneio = random.sample(pais, tamanho_torneio)
-    print ("pais", pais)
-    pai = max(torneio, key=lambda ind: ind[0])  # Seleciona o indivíduo com maior aptidão
-    return pai[1]  # Retorna apenas os genes do pai selecionado
-
 
 def mutate(mutation_probability, individuo):
-    # técnica Mutação de Bit
+    # gera um numero aleatório e se ele for menor que a probabilidade, faz a mutanção
     if mutation_probability > random.random():
+        # técnica Mutação de Bit
         pos_to_mutate = random.randint(0, len(individuo) - 1)
         if individuo[pos_to_mutate] == 1:
             individuo[pos_to_mutate] = 0
@@ -61,31 +58,21 @@ def mutate(mutation_probability, individuo):
 
 
 def fitness(individuo, peso_maximo, itens_disponiveis):
-    """Faz avaliacao do individuo"""
+    # calcula o fitness e o peso do indivíduo somando o valor dos seus itens que tem valor 1
     peso_total, valor_total = 0, 0
     for indice, valor in enumerate(individuo):
         peso_total += (individuo[indice] * itens_disponiveis[indice][0])
         valor_total += (individuo[indice] * itens_disponiveis[indice][1])
 
     if (peso_maximo - peso_total) < 0:
-        return -1  # retorna -1 no caso de peso excedido
-
-    print("Calculo de fitness", individuo, valor_total)
+        return -1  # retorna -1 no caso de peso excedido, desconsiderando este indivíduo
 
     return valor_total  # se for um individuo valido retorna seu valor, sendo maior melhor
 
 
-def media_fitness(populacao, peso_maximo,
-                  pesos_e_valores):  # só leva em consideracao os elementos que respeitem o peso maximo da mochila
-    """Encontra a avalicao media da populacao"""
-    summed = sum(
-        fitness(x, peso_maximo, pesos_e_valores) for x in populacao if fitness(x, peso_maximo, pesos_e_valores) >= 0)
-    return summed / (len(populacao) * 1.0)
-
-
 def melhor_solucao(populacao, peso_maximo,
                    itens_disponiveis):  # só leva em consideracao os elementos que respeitem o peso maximo da mochila
-    """Encontra a avalicao media da populacao"""
+    # encontra o indivíduo de maior fitness da popupação
     melhor_fit = 0
     melhor_sol = ()
     for x in populacao:
@@ -95,6 +82,15 @@ def melhor_solucao(populacao, peso_maximo,
             melhor_sol = x
 
     return melhor_fit, melhor_sol
+
+
+def selecao_torneio(pais, tamanho_torneio=3):
+    # método de seleção de pais por torneio
+    torneio = random.sample(pais, tamanho_torneio)
+    print ("pais", pais)
+    pai = max(torneio, key=lambda ind: ind[0])  # Seleciona o indivíduo com maior aptidão
+    return pai[1]  # Retorna apenas os genes do pai selecionado
+
 
 def selecao_roleta(pais):
     # Seleciona 2 pais baseado nas regras da roleta
