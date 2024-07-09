@@ -2,6 +2,7 @@ from gen_alg import *
 from draw_methods import *
 import random
 
+# cores dos textos da exibição da solução
 COR_VERDE_ESCURO = (0, 100, 0)
 COR_VERMELHO_ESCURO = (139, 0, 0)
 COR_AZUL_ESCURO = (0, 0, 139)
@@ -9,59 +10,67 @@ COR_AZUL_ESCURO = (0, 0, 139)
 # gera o conjunto de itens de forma aleatória. Gera 20 itens com peso entre 1 e 10 e valor entre 1 e 300
 itens_disponiveis = [(random.randint(5, 10), random.randint(1, 300)) for _ in range(16)]
 
-peso_maximo = 40
-tamanho_populacao = 150
-max_geracoes = 200
-qtd_itens_disponiveis = len(itens_disponiveis)
-geracoes_estagnacao = 50
+peso_maximo = 40 # peso máximo da mochila
+tamanho_populacao = 150 # tamanho da população de cada geração
+max_geracoes = 200 # numero máximo de gerações que serão executadas
+qtd_itens_disponiveis = len(itens_disponiveis) # quantidade de itens disponíveis
+geracoes_estagnacao = 50 # quantidade de gerações a se passarem sem melhora do fitness para que o algoritmo seja considerado estagnado
 
-running = True
-cont_geracao = 0
-cont_estagnacao = 0
+running = True # indica se o algoritmo está rodando
+cont_geracao = 0 # indica a geração atual
+cont_estagnacao = 0 # quantidade de gerações que se passaram sem melhoria do fitness
 
-populacao = population(tamanho_populacao, qtd_itens_disponiveis)
-melhor_sol_geracao = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
-historico_de_solucoes = [(0, [])]
-melhor_sol_historica = []
+populacao = population(tamanho_populacao, qtd_itens_disponiveis) # armazena a população de cada geração
+melhor_sol_geracao = melhor_solucao(populacao, peso_maximo, itens_disponiveis) # armazena a melhor solução da geração atual
+historico_de_solucoes = [(0, [])] # armazena todas as soluções
+melhor_sol_historica = [] # armazena a melhor solução entre todas as gerações
 
-melhor_fitness_anterior = 0
+melhor_fitness_anterior = 0 # variável auxiliar para controlar se o fitness melhorou em relação à geração anterior
 
-mutation_probability = 0.05
+mutation_probability = 0.05 # propoabilidade de um indivíduo sofrer mutação
 
-elitismo = False
+elitismo = True # indica se o algoritmo vai trabalhar com ou sem elitismo
 
-
+# loop principal do algoritmo
 while running:
+    # trata condições para finalizar a execução
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
-                running = False  # Quit the game when the 'q' key is pressed
+                running = False  # fecha o pygame quabndo a tecla 'q' for pressionada
 
+    # executa a evolução caso esteja dentro do limite de gerações ou se o algoritmo não tiver estagnado
     if cont_geracao < max_geracoes and cont_estagnacao < geracoes_estagnacao:
 
+        # armazena os pais e seus respectivos fitness para trabalhar
         pais = [[fitness(x, peso_maximo, itens_disponiveis), x] for x in populacao if
                 fitness(x, peso_maximo, itens_disponiveis) >= 0]
+        # inverte a ordem do array
         pais.sort(reverse=True)
 
-        # REPRODUCAO
+        # gera a nova população de indivíduos
         filhos = reproduce(pais, tamanho_populacao, "R", elitismo, melhor_sol_historica)
 
-        # MUTACAO
-        for individuo in filhos:
-            mutate(mutation_probability, individuo)
+        # realiza mutação dos indivíduos (mantem o melhor indivíduo intacto caso esteja trabalhando com elitismo)
+        for ind, individuo in enumerate(filhos):
+            if ind > 0 or not elitismo:
+                mutate(mutation_probability, individuo)
 
+        # substitui a população anterior pelos novos indivíduos
         populacao = filhos
 
         # Identifica melhor solução da geração
         melhor_sol_geracao = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
         print("Melhor sol", melhor_sol_geracao)
 
+        # atualiza a variável de melhor solução histórica caso necessário
         fit_melhor_sol_hist = fitness(melhor_sol_historica, peso_maximo, itens_disponiveis)
         if melhor_sol_geracao[0] > fit_melhor_sol_hist:
             melhor_sol_historica = melhor_sol_geracao[1]
 
+        # atualiza o contador de estagnação
         if melhor_sol_geracao[0] > melhor_fitness_anterior:
             melhor_fitness_anterior = melhor_sol_geracao[0]
             cont_estagnacao = 0
