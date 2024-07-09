@@ -63,7 +63,6 @@ while running:
 
         # Identifica melhor solução da geração
         melhor_sol_geracao = melhor_solucao(populacao, peso_maximo, itens_disponiveis)
-        print("Melhor sol", melhor_sol_geracao)
 
         # atualiza a variável de melhor solução histórica caso necessário
         fit_melhor_sol_hist = fitness(melhor_sol_historica, peso_maximo, itens_disponiveis)
@@ -97,7 +96,6 @@ while running:
             cor = COR_VERMELHO_ESCURO
             if melhor_sol_historica[i] == 1:
                 cor = COR_VERDE_ESCURO
-            print ("item", i, item, melhor_sol_historica[i])
             draw_text(screen, "Item " + str(i + 1) + " - " + str(item[0]) + " g | R$ " + str(item[1]),
                       930, y_item, cor, font_size=15, font='Arial')
             y_item += 30
